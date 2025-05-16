@@ -6,7 +6,7 @@ import { getHealthStatus } from '../controllers/health.controller.js';
 const router = Router();
 
 // Define a GET route for the health check and link it to the controller
-router.get("/health", getHealthStatus);
+router.get("/", getHealthStatus);
 
 // Export the router to be used in the main application
 export default router;

@@ -21,11 +21,11 @@ app.use(express.json());
 
 // Mount the health router on the /api path
 // This means that any request to /api/health will be handled by the health router
-app.use("/api", healthRouter);
+app.use("/api/health", healthRouter);
 
 // Mount the task router on the /api path
 // This means that any request to /api/tasks will be handled by the task router
-app.use("/api", taskRouter);
+app.use("/api/tasks", taskRouter);
 
 // Mount the auth router on the /api path
 // This means that any request to /api/auth will be handled by the auth router
