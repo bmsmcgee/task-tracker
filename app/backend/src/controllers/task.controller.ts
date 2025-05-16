@@ -38,8 +38,14 @@ export const getAllTasks = async (
     const sortOrder = order === "asc" ? 1 : -1; // Default to descending order
     const sort: [string, 1 | -1][] = [[String(sortBy), sortOrder]]; // Create a sort array
 
+    const userID = (<any>req).userId; // Extract user ID from the request object
+
     // Fetch tasks from the database based on the filter and sort criteria
-    const tasks = await TaskModel.find(filter).sort(sort);
+    const tasks = await TaskModel.find({
+      ...filter,
+      owner: userID, // Filter tasks by the authenticated user's ID
+    }).sort(sort);
+
     res.status(200).json(tasks); // Send the tasks as a JSON response
   } catch (error) {
     console.error("Failed to fetch tasks:", error); // Log the error
@@ -53,7 +59,13 @@ export const createTask = async (
   res: Response
 ): Promise<void> => {
   try {
-    const newTask = await TaskModel.create(req.body); // Create a new task using the request body
+    const userID = (<any>req).userId; // Extract user ID from the request object
+
+    const newTask = await TaskModel.create({
+      ...req.body,
+      owner: userID, // Set the owner of the task to the authenticated user
+    });
+
     res.status(200).json(newTask); // Send the created task as a JSON response
   } catch (error) {
     console.error("Failed to create task:", error); // Log the error
@@ -67,14 +79,19 @@ export const getTaskById = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
+  const userID = (<any>req).userId; // Extract user ID from the request object
 
   try {
-    const task = await TaskModel.findById(id); // Fetch the task by ID from the database
+    const task = await TaskModel.findOne({
+      _id: id,
+      owner: userID, // Ensure the task belongs to the authenticated user
+    }); // Fetch the task by ID from the database
 
     if (!task) {
       res.status(404).json({ error: "Task not found" }); // Send a 404 error if the task is not found
       return;
     }
+
     res.status(200).json(task); // Send the found task as a JSON response
   } catch (error) {
     console.error(`Failed to fetch task with ID ${id}`, error); // Log the error
@@ -88,6 +105,7 @@ export const updateTaskById = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
+  const userID = (<any>req).userId; // Extract user ID from the request object
 
   // Prevent the _id field from being updated
   if (req.body._id) {
@@ -95,10 +113,17 @@ export const updateTaskById = async (
   }
 
   try {
-    const updatedTask = await TaskModel.findByIdAndUpdate(id, req.body, {
-      new: true, // Return the updated document
-      runValidators: true, // Validate the update against the schema
-    });
+    const updatedTask = await TaskModel.findOneAndUpdate(
+      {
+        _id: id,
+        owner: userID,
+      },
+      req.body,
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Validate the update against the schema
+      }
+    );
 
     // Check if the task was found and updated
     if (!updatedTask) {
@@ -118,9 +143,13 @@ export const deleteTaskById = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
+  const userID = (<any>req).userId; // Extract user ID from the request object
 
   try {
-    const deletedTask = await TaskModel.findByIdAndDelete(id); // Delete the task by ID from the database
+    const deletedTask = await TaskModel.findOneAndDelete({
+      _id: id,
+      owner: userID, // Ensure the task belongs to the authenticated user
+    }); // Delete the task by ID from the database
 
     // Check if the task was found and deleted
     if (!deletedTask) {

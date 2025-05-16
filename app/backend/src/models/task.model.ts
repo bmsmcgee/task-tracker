@@ -4,7 +4,9 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import type { Task, TaskStatus, TaskPriority } from "../types/Task.js";
 
 // Define the Task interface extending mongoose Document
-export interface TaskDocument extends Task, Document {}
+export interface TaskDocument extends Omit<Task, "owner">, Document {
+  owner: Schema.Types.ObjectId; 
+}
 
 // Define the Task schema
 const TaskSchema: Schema<TaskDocument> = new Schema(
@@ -40,6 +42,11 @@ const TaskSchema: Schema<TaskDocument> = new Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId, 
+      ref: "User", 
+      required: true,
     },
   },
   {
