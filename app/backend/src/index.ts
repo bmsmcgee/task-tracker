@@ -4,6 +4,7 @@ import express from "express"; // Import express
 import dotenv from "dotenv"; // Import dotenv for environment variables
 import healthRouter from "./routes/health.route.js"; // Import the health route
 import { connectToDatabase } from "./config/db.js"; // Import the database connection function
+import taskRouter from "./routes/task.route.js"; // Import the task route
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,6 +18,10 @@ const PORT = process.env.PORT || 3000;
 // Mount the health router on the /api path
 // This means that any request to /api/health will be handled by the health router
 app.use("/api", healthRouter);
+
+// Mount the task router on the /api path
+// This means that any request to /api/tasks will be handled by the task router
+app.use("/api", taskRouter);
 
 // Connect to the database and start the server
 // The connectToDatabase function will attempt to connect to MongoDB
