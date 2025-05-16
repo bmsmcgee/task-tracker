@@ -70,6 +70,7 @@ export const updateTaskById = async (
       runValidators: true, // Validate the update against the schema
     });
 
+    // Check if the task was found and updated
     if (!updatedTask) {
       res.status(404).json({ error: "Task not found" }); // Send a 404 error if the task is not found
       return;
@@ -78,5 +79,27 @@ export const updateTaskById = async (
   } catch (error) {
     console.error(`Failed to update task with ID ${id}`, error); // Log the error
     res.status(400).json({ error: "Invalid update data or task ID" }); // Send a 400 error if the ID format is invalid
+  }
+};
+
+// Controller to delete a task by its ID from the database
+export const deleteTaskById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const deletedTask = await TaskModel.findByIdAndDelete(id); // Delete the task by ID from the database
+
+    // Check if the task was found and deleted
+    if (!deletedTask) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+    res.status(200).json({ message: "Task deleted successfully" }); // Send a success message
+  } catch (error) {
+    console.error(`Failed to delete task ${id}`, error); // Log the error
+    res.status(400).json({ error: "Invalid task ID format" }); // Send a 400 error if the ID format is invalid
   }
 };

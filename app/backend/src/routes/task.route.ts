@@ -5,7 +5,8 @@ import {
   getAllTasks,
   createTask,
   getTaskById,
-  updateTaskById
+  updateTaskById,
+  deleteTaskById
 } from "../controllers/task.controller.js";
 
 // Create a new router instance
@@ -22,5 +23,8 @@ router.get("/tasks/:id", getTaskById);
 
 // Define a PUT route for updating a task by ID and link it to the controller
 router.put("/tasks/:id", updateTaskById);
+
+// Define a DELETE route for deleting a task by ID and link it to the controller
+router.delete("/tasks/:id", deleteTaskById);
 
 export default router;
