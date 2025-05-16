@@ -51,3 +51,32 @@ export const getTaskById = async (
     res.status(400).json({ error: "Invalid task ID format" }); // Send a 400 error if the ID format is invalid
   }
 };
+
+// Controller to update a task by its ID in the database
+export const updateTaskById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  // Prevent the _id field from being updated
+  if (req.body._id) {
+    delete req.body._id;
+  }
+
+  try {
+    const updatedTask = await TaskModel.findByIdAndUpdate(id, req.body, {
+      new: true, // Return the updated document
+      runValidators: true, // Validate the update against the schema
+    });
+
+    if (!updatedTask) {
+      res.status(404).json({ error: "Task not found" }); // Send a 404 error if the task is not found
+      return;
+    }
+    res.status(200).json(updatedTask); // Send the updated task as a JSON response
+  } catch (error) {
+    console.error(`Failed to update task with ID ${id}`, error); // Log the error
+    res.status(400).json({ error: "Invalid update data or task ID" }); // Send a 400 error if the ID format is invalid
+  }
+};
