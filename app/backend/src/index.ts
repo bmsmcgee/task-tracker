@@ -15,6 +15,9 @@ const app = express();
 // Set the port to 3000 or use the environment variable PORT
 const PORT = process.env.PORT || 3000;
 
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
 // Mount the health router on the /api path
 // This means that any request to /api/health will be handled by the health router
 app.use("/api", healthRouter);
