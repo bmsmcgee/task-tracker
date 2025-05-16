@@ -9,7 +9,37 @@ export const getAllTasks = async (
   res: Response
 ): Promise<void> => {
   try {
-    const tasks = await TaskModel.find(); // Fetch all tasks from the database
+    // Extract query parameters from the request
+    // These parameters can be used to filter, sort, and search tasks
+    const {
+      status,
+      priority,
+      search,
+      sortBy = "createdAt",
+      order = "desc",
+    } = req.query;
+
+    // Create a filter object based on the query parameters
+    const filter: Record<string, any> = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (priority) {
+      filter.priority = priority;
+    }
+
+    if (search) {
+      filter.title = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    // Validate the sortBy and order parameters
+    const sortOrder = order === "asc" ? 1 : -1; // Default to descending order
+    const sort: [string, 1 | -1][] = [[String(sortBy), sortOrder]]; // Create a sort array
+
+    // Fetch tasks from the database based on the filter and sort criteria
+    const tasks = await TaskModel.find(filter).sort(sort);
     res.status(200).json(tasks); // Send the tasks as a JSON response
   } catch (error) {
     console.error("Failed to fetch tasks:", error); // Log the error
