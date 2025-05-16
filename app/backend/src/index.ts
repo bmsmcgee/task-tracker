@@ -1,7 +1,7 @@
 // src/index.ts
 
-import { ok } from 'assert';
 import express from 'express';      // Import express
+import healthRouter from './routes/health.route.js'; // Import the health route
 
 // Create an instance of express
 const app = express();             
@@ -9,12 +9,9 @@ const app = express();
 // Set the port to 3000 or use the environment variable PORT
 const PORT = process.env.PORT || 3000; 
 
-// Register a simple GET route at /api/health
-// This will act as a "ping" endpoint to check if the server is running
-app.get("/api/health", (req, res) => {
-    // Send a 200 OK response with a JSON object
-    res.status(200).json({ ok: true });
-})
+// Mount the health router on the /api path
+// This means that any request to /api/health will be handled by the health router
+app.use("/api", healthRouter)
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => {
