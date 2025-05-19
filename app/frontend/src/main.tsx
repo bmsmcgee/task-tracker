@@ -10,6 +10,7 @@ import TaskPage from './pages/TaskPage.tsx';
 
 // Import AuthContext provider
 import { AuthProvider } from './context/AuthContext.tsx';
+import PrivateRoute from './components/PrivateRoute.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,7 +20,14 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/tasks" element={<TaskPage />} />
+          <Route
+            path="/tasks"
+            element={
+              <PrivateRoute>
+                <TaskPage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
