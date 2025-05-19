@@ -1,7 +1,8 @@
 // src/index.ts
 
-import express from "express"; // Import express
+import express, { NextFunction } from "express"; // Import express
 import dotenv from "dotenv"; // Import dotenv for environment variables
+import cors from "cors";
 import healthRouter from "./routes/health.route.js"; // Import the health route
 import { connectToDatabase } from "./config/db.js"; // Import the database connection function
 import taskRouter from "./routes/task.route.js"; // Import the task route
@@ -15,6 +16,13 @@ const app = express();
 
 // Set the port to 3000 or use the environment variable PORT
 const PORT = process.env.PORT || 3000;
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
