@@ -2,6 +2,9 @@
 
 import type { FC } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { loginUser } from '../features/auth/api';
 
 /**
  * Defines the structure of form input fields for login
@@ -19,13 +22,22 @@ const LoginPage: FC = () => {
     formState: { errors }, // Object storing any validation errors for each field
   } = useForm<LoginFormInputs>();
 
+  const navigate = useNavigate()
+  const { login } = useAuth()
+
   /**
-   * Handles form submission logic when the user submits login credentials
-   * @param data - The form field values: email and password
+   * Called when the login form is submitted with valid values
+   * Sends credentials to backend, stores JWT on success, and redirects to /tasks
    */
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log('Form submitted:', data);
-    // TODO: Call backend login API and handle response here
+  const onSubmit = async (data: LoginFormInputs) => {
+    try {
+      const token = await loginUser(data);    // Send login request to backend
+      login(token)
+      navigate('/tasks')
+    } catch (error) {
+      console.error('Login failed:', error)
+      alert('Invalid email or password')    // TODO: replace with a UI error
+    }
   };
 
   return (
